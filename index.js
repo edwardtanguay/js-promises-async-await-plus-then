@@ -23,9 +23,23 @@ const getEmployees = new Promise((resolve, reject) => {
 	}, ms);
 });
 
+const getEvents = new Promise((resolve, reject) => {
+	const ms = getRand(1000, 3000);
+	const num = getRand(1, 2);
+	setTimeout(() => {
+		if (num !== 1) {
+			resolve([{ date: "2022-04-06", eventName: 'All-Hands Meeting' },{date: "2022-04-08", eventName: 'Sales Meeting'}]);
+		} else {
+			reject(new Error('Calendar service currently down.'));
+		}
+	}, ms);
+});
+
 const apiDataService = async () => {
 	// getName.then((text) => console.log(text));
+
 	const timer = startElapsedTime();
+
 	const obj = {
 		employees: [],
 		errors: {},
@@ -35,6 +49,7 @@ const apiDataService = async () => {
 		}
 	};
 
+	// employees
 	try {
 		obj.employees = await getEmployees;
 	}
@@ -43,10 +58,19 @@ const apiDataService = async () => {
 		obj.errors = [];
 		obj.errors.push({ dataSource: 'employees', error: err.message })
 	}
-	// const result = await getName;
-	// console.log(result);
-	// console.log(await getInfo);
+	
+	// events 
+	try {
+		obj.events = await getEvents;
+	}
+	catch (err) {
+		obj.events = [];
+		obj.errors = [];
+		obj.errors.push({ dataSource: 'events', error: err.message })
+	}
+
 	obj.info.elapsedTime = getElapsedTime(timer);
+
 	return obj;
 }
 
