@@ -59,7 +59,19 @@ const apiDataService = async () => {
 		obj.errors.push({ dataSource: 'employees', error: err.message })
 	}
 
-	// events 
+	// events - with async/await
+	try {
+		obj.events = await getEvents();
+	}
+	catch (err) {
+		obj.events = [];
+		obj.errors.push({ dataSource: 'events', error: err.message })
+	}
+	obj.info.elapsedTime = getElapsedTime(timer);
+	return obj;
+
+	// events - with then()
+	/*
 	obj.info.elapsedTime = getElapsedTime(timer);
 	return getEvents()
 		.then(events => {
@@ -71,9 +83,10 @@ const apiDataService = async () => {
 			obj.errors.push({ dataSource: 'events', error: err.message });
 			return obj;
 		});
+	*/
 }
 
 (async () => {
 	const data = await apiDataService();
-	console.log('here', data);
+	console.log(data);
 })();
