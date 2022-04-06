@@ -11,24 +11,26 @@ const getElapsedTime = (timer) => {
 }
 
 // GET DATA
-const getEmployees = new Promise((resolve, reject) => {
-	const ms = getRand(1000, 3000);
-	const num = getRand(1, 2);
-	setTimeout(() => {
-		if (num !== 1) {
-			resolve([{ name: "Henri", age: 33 },{ name: "Randal", age: 34 }]);
-		} else {
-			reject(new Error('API not available at the moment.'));
-		}
-	}, ms);
-});
+const getEmployees = () => {
+	return new Promise((resolve, reject) => {
+		const ms = getRand(1000, 3000);
+		const num = getRand(1, 2);
+		setTimeout(() => {
+			if (num !== 1) {
+				resolve([{ name: "Henri", age: 33 }, { name: "Randal", age: 34 }]);
+			} else {
+				reject(new Error('API not available at the moment.'));
+			}
+		}, ms);
+	});
+};
 
-const getEvents = new Promise((resolve, reject) => {
+const getEvents = () => new Promise((resolve, reject) => {
 	const ms = getRand(1000, 3000);
 	const num = getRand(1, 2);
 	setTimeout(() => {
 		if (num !== 1) {
-			resolve([{ date: "2022-04-06", eventName: 'All-Hands Meeting' },{date: "2022-04-08", eventName: 'Sales Meeting'}]);
+			resolve([{ date: "2022-04-06", eventName: 'All-Hands Meeting' }, { date: "2022-04-08", eventName: 'Sales Meeting' }]);
 		} else {
 			reject(new Error('Calendar service currently down.'));
 		}
@@ -42,7 +44,7 @@ const apiDataService = async () => {
 
 	const obj = {
 		employees: [],
-		errors: {},
+		errors: [],
 		info: {
 			serviceName: 'API Data Service',
 			version: '3.021'
@@ -51,21 +53,19 @@ const apiDataService = async () => {
 
 	// employees
 	try {
-		obj.employees = await getEmployees;
+		obj.employees = await getEmployees();
 	}
 	catch (err) {
 		obj.employees = [];
-		obj.errors = [];
 		obj.errors.push({ dataSource: 'employees', error: err.message })
 	}
-	
+
 	// events 
 	try {
-		obj.events = await getEvents;
+		obj.events = await getEvents();
 	}
 	catch (err) {
 		obj.events = [];
-		obj.errors = [];
 		obj.errors.push({ dataSource: 'events', error: err.message })
 	}
 
