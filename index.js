@@ -11,7 +11,7 @@ const getElapsedTime = (timer) => {
 }
 
 // GET DATA
-const getEmployees = () => {
+const getEmployees = async () => {
 	return new Promise((resolve, reject) => {
 		const ms = getRand(1000, 3000);
 		const num = getRand(1, 2);
@@ -25,7 +25,7 @@ const getEmployees = () => {
 	});
 };
 
-const getEvents = () => new Promise((resolve, reject) => {
+const getEvents = async () => new Promise((resolve, reject) => {
 	const ms = getRand(1000, 3000);
 	const num = getRand(1, 2);
 	setTimeout(() => {
@@ -38,7 +38,6 @@ const getEvents = () => new Promise((resolve, reject) => {
 });
 
 const apiDataService = async () => {
-	// getName.then((text) => console.log(text));
 
 	const timer = startElapsedTime();
 
@@ -61,20 +60,20 @@ const apiDataService = async () => {
 	}
 
 	// events 
-	try {
-		obj.events = await getEvents();
-	}
-	catch (err) {
-		obj.events = [];
-		obj.errors.push({ dataSource: 'events', error: err.message })
-	}
-
 	obj.info.elapsedTime = getElapsedTime(timer);
-
-	return obj;
+	return getEvents()
+		.then(events => {
+			obj.events = events;
+			return obj;
+		})
+		.catch(err => {
+			obj.events = [];
+			obj.errors.push({ dataSource: 'events', error: err.message });
+			return obj;
+		});
 }
 
 (async () => {
 	const data = await apiDataService();
-	console.log(data);
+	console.log('here', data);
 })();
